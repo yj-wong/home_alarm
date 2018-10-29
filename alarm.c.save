@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <wiringPi.h>
+
+int main(int argc, char *argv[])
+{
+  wiringPiSetup () ;
+  pinMode(0, INPUT);
+  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, INPUT);
+  pinMode(5, OUTPUT);
+  pullUpDnControl(3, PUD_UP);
+		
+	int state = 0;	
+	/*
+	0: off
+	1: arming
+	2: armed
+	3: triggered
+	4: sounding
+	*/
+		
+  /*ALARM OFF*/
+	while (state == 0) {
+		digitalWrite(1, HIGH);
+		digitalWrite(2, LOW);
+		digitalWrite(5, LOW);
+		
+		if (digitalRead(3) == 0) {
+			state = 1;
+			printf("ALARM_ARMING.\n");
+		}	
+	}
+	 
+	 /*ALARM_ARMING*/
+	while (state == 1) {
+		int n = 2;
+		for (int i = 0; i < n; i++) {
+			digitalWrite(1, HIGH); delay(500);
+			digitalWrite(1, LOW); delay(500);
+		}
+		digitalWrite(2, HIGH);
+		state = 2;
+		printf("ALARM_ARMED.\n");
+	}
+	
+	/*ALARM_ARMED*/
+	while (state == 2) {
+		digitalWrite(2, HIGH);
+		delay(1000);
+		
+		if (digitalRead(3) == 0) {
+			state = 0;
+			printf("ALARM_OFF.\n");
+		}
+		else if (digitalRead(0) == 0) {
+			state = 3;
+			printf("ALARM_TRIGGERED.\n");
+		}
+	}
+	
+	/*ALARM_TRIGGERED*/
+	while (state == 3) {
+		int n = 2;
+		for (int i = 0; i < n; i++) {
+		}	
+	
+		digitalWrite(1, HIGH);
+		digitalWrite(2, HIGH);
+		
+		if (digitalRead(0) == 0) {
+			state = 0;
+			printf("ALARM_OFF");
+		}
+	}
+}
