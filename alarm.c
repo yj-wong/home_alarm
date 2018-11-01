@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   pinMode(1, OUTPUT);
   pinMode(2, OUTPUT);
   pinMode(3, INPUT);
-  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
   pullUpDnControl(3, PUD_UP);
 		
 	/*
@@ -24,10 +24,13 @@ int main(int argc, char *argv[])
 	*/
 		
   /*ALARM OFF*/
+  printf("ALARM_OFF\n");
 	TOP:	while (state == 0) {
 		digitalWrite(1, HIGH);
 		digitalWrite(2, LOW);
 		digitalWrite(5, LOW);
+		
+		delay(1000);
 		
 		if (digitalRead(3) == 0) {
 			state = 1;
@@ -58,7 +61,8 @@ int main(int argc, char *argv[])
 			printf("ALARM_OFF.\n");
 			goto TOP;
 		}
-		else if (digitalRead(0) == 0) {
+		delay(1000);
+		if (digitalRead(0) == 0) {
 			state = 3;
 			printf("ALARM_TRIGGERED.\n");
 		}
@@ -93,11 +97,11 @@ int main(int argc, char *argv[])
 		
 		digitalWrite(1, HIGH);
 		digitalWrite(2, HIGH);
-		digitalWrite(5, HIGH);		
+		digitalWrite(6, HIGH);
 		delay(2000);
 		digitalWrite(1, LOW);
 		digitalWrite(2, LOW);
-		digitalWrite(5, LOW);
+		digitalWrite(6, LOW);
 		delay(2000);
 		
 		ifttt("https://maker.ifttt.com/trigger/alarm_triggered/with/key/x9XnvGbgm0kq1KFLFBCyZ", "alarm", "sounding", "hi");
@@ -109,8 +113,7 @@ int main(int argc, char *argv[])
 			goto TOP;
 		}
 		else if (time(NULL) == end) {
-			continue;		
+			continue;
 		}
 	}
 }
-	
